@@ -45,38 +45,26 @@ export default function OverviewSection({ onNavigateTab }) {
 
         {/* Main text */}
         <div className="hero-content-wrap">
-          <div className="hero-badge-row">
-            <div className="section-chip blue">
-              <Cpu size={11} />
-              CuraTerra Intelligence Engine
-            </div>
-            <span className="badge badge-success" style={{ fontSize: '0.68rem' }}>
-              NIC Certified Portal
-            </span>
-          </div>
-
           <h1 style={{
             fontFamily: 'var(--font-heading)',
-            fontSize: '1.85rem',
+            fontSize: '2rem',
             fontWeight: 800,
             color: 'var(--text-900)',
             lineHeight: 1.2,
             marginBottom: 12,
             letterSpacing: '-0.3px',
           }}>
-            Unified Scheme Administration{' '}
-            <span style={{ color: 'var(--primary)' }}>&amp; Circular Ingestion</span>
+            Admin Dashboard
           </h1>
 
           <p style={{
-            fontSize: '0.875rem',
+            fontSize: '0.9rem',
             color: 'var(--text-500)',
-            lineHeight: 1.65,
+            lineHeight: 1.6,
             marginBottom: 24,
-            maxWidth: 520,
+            maxWidth: 400,
           }}>
-            Enterprise policy administration console. Ingest official gazette and ministry PDF circulars
-            with AI extraction, synchronize live RAG vectorstores, and monitor citizen uptake in real time.
+            Manage government schemes and view platform analytics.
           </p>
 
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
@@ -110,7 +98,7 @@ export default function OverviewSection({ onNavigateTab }) {
               <span className="metric-trend up">+2 New</span>
             </div>
             <div className="metric-value">{stats.total_schemes}</div>
-            <div className="metric-sub">Central &amp; State Portals</div>
+
           </div>
         </div>
 
@@ -124,7 +112,7 @@ export default function OverviewSection({ onNavigateTab }) {
               <span className="metric-trend up">+14.2%</span>
             </div>
             <div className="metric-value">{stats.total_users}</div>
-            <div className="metric-sub">MongoDB Profile Sync</div>
+
           </div>
         </div>
 
@@ -138,7 +126,7 @@ export default function OverviewSection({ onNavigateTab }) {
               <span className="metric-trend neutral">6 Active</span>
             </div>
             <div className="metric-value">{stats.categories_count}</div>
-            <div className="metric-sub">Agri, Education, Health</div>
+
           </div>
         </div>
 
@@ -152,7 +140,7 @@ export default function OverviewSection({ onNavigateTab }) {
               <span className="metric-trend up">LLaMA 3.3</span>
             </div>
             <div className="metric-value text-lg" style={{ marginTop: 4 }}>FAISS Ready</div>
-            <div className="metric-sub">Groq 70B Live Pipeline</div>
+
           </div>
         </div>
       </div>
@@ -182,12 +170,7 @@ export default function OverviewSection({ onNavigateTab }) {
             PDF Circular Ingestion Engine
           </h3>
 
-          <p style={{ fontSize: '0.845rem', color: 'var(--text-500)', lineHeight: 1.65, marginBottom: 24, maxWidth: '72%' }}>
-            Enables administrators to upload official government PDF circulars for both{' '}
-            <strong style={{ color: 'var(--text-700)' }}>Purpose 1 (New Scheme Creation)</strong> and{' '}
-            <strong style={{ color: 'var(--text-700)' }}>Purpose 2 (Edited / Revised Scheme Amendments)</strong>.
-            Automatically structures bilingual metadata and synchronizes FAISS vector store.
-          </p>
+
 
           {/* PDF Document Illustration */}
           <PdfIllustration />
@@ -224,11 +207,7 @@ export default function OverviewSection({ onNavigateTab }) {
             Geospatial Heat Map Analytics
           </h3>
 
-          <p style={{ fontSize: '0.845rem', color: 'var(--text-500)', lineHeight: 1.65, marginBottom: 24, maxWidth: '68%' }}>
-            Interactive GIS heat mapping to track district-level scheme penetration,
-            unmet citizen demand, and fund allocation density across Indian states with
-            real-time demographic clustering.
-          </p>
+
 
           {/* Detailed India Map Illustration with Legend */}
           <IndiaMapGraphic />

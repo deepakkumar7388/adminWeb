@@ -17,12 +17,6 @@ const CATEGORIES = [
   { id: 'general',    label: 'General Welfare' },
 ];
 
-const RECENT_UPLOADS = [
-  { name: 'PM-Kisan-Guidelines-2026.pdf', ministry: 'Ministry of Agriculture', date: '29 Sep 2026, 10:12 AM', status: 'Processing' },
-  { name: 'Ayushman-Bharat-Circular.pdf', ministry: 'Ministry of Health',      date: '28 Sep 2026, 04:18 PM', status: 'Completed' },
-  { name: 'NEP-Education-Scheme.pdf',     ministry: 'Ministry of Education',   date: '27 Sep 2026, 11:02 AM', status: 'Completed' },
-  { name: 'Skill-India-Revised.pdf',      ministry: 'Ministry of Skill Dev.',  date: '26 Sep 2026, 03:45 PM', status: 'Failed' },
-];
 
 export default function UploadSchemeSection({ onSchemeUpdated, preselectedScheme = null }) {
   // Step management (1=upload, 2=extract, 3=review, 4=publish)
@@ -40,6 +34,16 @@ export default function UploadSchemeSection({ onSchemeUpdated, preselectedScheme
   const [saveMsg, setSaveMsg] = useState(null);
 
   const fileInputRef = useRef();
+
+  const recentUploads = existingSchemes.slice(0, 5).map((s) => ({
+    id: s.id,
+    name: s.titleEn || 'Scheme Document',
+    ministry: s.ministryEn || 'Government of India',
+    officialUrl: s.officialUrl || null,
+    date: s.updatedAt ? new Date(s.updatedAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—',
+    status: 'Completed',
+    fullScheme: s,
+  }));
 
   useEffect(() => {
     api.getSchemes().then(d => {
@@ -133,6 +137,32 @@ export default function UploadSchemeSection({ onSchemeUpdated, preselectedScheme
 
   const updateField = (key, val) => {
     setExtractedData(prev => ({ ...prev, [key]: val }));
+  };
+
+  const handleViewScheme = (url) => {
+    if (url && url !== 'https://myscheme.gov.in') {
+      window.open(url, '_blank');
+    } else {
+      window.open('https://myscheme.gov.in', '_blank');
+    }
+  };
+
+  const handleEditScheme = (scheme) => {
+    setMode('edit');
+    setSelectedSchemeId(scheme.id);
+    setExtractedData({ ...scheme });
+    setStep(3);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleDeleteScheme = async (schemeId, schemeName) => {
+    if (!window.confirm(`Are you sure you want to delete "${schemeName}"? This cannot be undone.`)) return;
+    try {
+      await api.deleteScheme(schemeId);
+      setExistingSchemes(prev => prev.filter(s => s.id !== schemeId));
+    } catch (err) {
+      alert('Failed to delete scheme: ' + (err.message || 'Unknown error'));
+    }
   };
 
   const stepConfig = [
@@ -359,7 +389,7 @@ export default function UploadSchemeSection({ onSchemeUpdated, preselectedScheme
                 </div>
                 <div className="form-group" style={{ gridColumn: '1/-1' }}>
                   <label className="form-label">Eligibility Criteria (English)</label>
-                  <textarea className="form-control" value={extractedData.criteriaEn || ''} onChange={e => updateField('criteriaEn', e.target.value)} rows={2} />
+                  <textarea className="form-control" value={extractedData.whyEligibleEn || ''} onChange={e => updateField('whyEligibleEn', e.target.value)} rows={3} />
                 </div>
               </div>
 
@@ -418,7 +448,7 @@ export default function UploadSchemeSection({ onSchemeUpdated, preselectedScheme
                   </tr>
                 </thead>
                 <tbody>
-                  {RECENT_UPLOADS.map((row, i) => (
+                  {recentUploads.length > 0 ? recentUploads.map((row, i) => (
                     <tr key={i}>
                       <td style={{ color: 'var(--text-300)', fontSize: '0.78rem' }}>{i + 1}</td>
                       <td>
@@ -435,12 +465,39 @@ export default function UploadSchemeSection({ onSchemeUpdated, preselectedScheme
                         </span>
                       </td>
                       <td>
-                        <button className="tbl-action-btn" title="View"><Eye size={13} /></button>
-                        <button className="tbl-action-btn" title="Edit"><Edit3 size={13} /></button>
-                        <button className="tbl-action-btn danger" title="Delete"><Trash2 size={13} /></button>
+                        <button
+                          type="button"
+                          className="tbl-action-btn"
+                          title="View Official Page"
+                          onClick={() => handleViewScheme(row.officialUrl)}
+                        >
+                          <Eye size={13} />
+                        </button>
+                        <button
+                          type="button"
+                          className="tbl-action-btn"
+                          title="Edit Scheme"
+                          onClick={() => handleEditScheme(row.fullScheme)}
+                        >
+                          <Edit3 size={13} />
+                        </button>
+                        <button
+                          type="button"
+                          className="tbl-action-btn danger"
+                          title="Delete Scheme"
+                          onClick={() => handleDeleteScheme(row.id, row.name)}
+                        >
+                          <Trash2 size={13} />
+                        </button>
                       </td>
                     </tr>
-                  ))}
+                  )) : (
+                    <tr>
+                      <td colSpan="6" style={{ textAlign: 'center', padding: '24px', color: 'var(--text-400)' }}>
+                        No recent uploads found.
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>

@@ -14,6 +14,7 @@ import {
   User,
   ChevronRight
 } from 'lucide-react';
+import logoImg from '../assets/logo.jpeg';
 import EmblemOfIndia from './EmblemOfIndia';
 
 const MAIN_NAV = [
@@ -26,13 +27,6 @@ const MAIN_NAV = [
 const ADMIN_NAV = [
   { id: 'scheme-mgmt',  label: 'Scheme Management',  icon: Settings2 },
   { id: 'citizen-mgmt', label: 'Citizen Management', icon: Users },
-  { id: 'rag-store',    label: 'RAG Vector Store',   icon: Database },
-  { id: 'system-logs',  label: 'System Logs',        icon: ScrollText },
-];
-
-const SYSTEM_NAV = [
-  { id: 'api-integrations', label: 'API & Integrations', icon: Link2 },
-  { id: 'settings',         label: 'Settings',           icon: Settings },
 ];
 
 export default function Sidebar({ activeTab, setActiveTab, user, onLogout, className = '' }) {
@@ -47,23 +41,7 @@ export default function Sidebar({ activeTab, setActiveTab, user, onLogout, class
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '4px 0' }}>
           {/* Hexagon Logo Icon */}
           <div style={{ flexShrink: 0, width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <linearGradient id="ctHexGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#93c5fd" />
-                  <stop offset="50%" stopColor="#3b82f6" />
-                  <stop offset="100%" stopColor="#1d4ed8" />
-                </linearGradient>
-              </defs>
-              <polygon
-                points="17,3 30,10.5 30,23.5 17,31 4,23.5 4,10.5"
-                stroke="url(#ctHexGrad)"
-                strokeWidth="3.2"
-                strokeLinejoin="round"
-                fill="rgba(29, 78, 216, 0.15)"
-              />
-              <circle cx="17" cy="17" r="4.5" fill="#60a5fa" />
-            </svg>
+            <img src={logoImg} alt="CuraTerra Logo" style={{ width: '100%', height: '100%', borderRadius: '6px', objectFit: 'cover' }} />
           </div>
 
           <div>
@@ -84,7 +62,7 @@ export default function Sidebar({ activeTab, setActiveTab, user, onLogout, class
               marginTop: 2,
               fontWeight: 400
             }}>
-              Unified Scheme Governance<br />&amp; Ingestion
+              Admin Dashboard
             </div>
           </div>
         </div>
@@ -122,20 +100,7 @@ export default function Sidebar({ activeTab, setActiveTab, user, onLogout, class
           ))}
         </div>
 
-        <div className="nav-group-label">SYSTEM</div>
-        <div>
-          {SYSTEM_NAV.map(({ id, label, icon: Icon }) => (
-            <button
-              key={id}
-              className={`nav-item ${activeTab === id ? 'active' : ''}`}
-              onClick={() => setActiveTab(id)}
-              aria-current={activeTab === id ? 'page' : undefined}
-            >
-              <Icon size={17} className="nav-item-icon" />
-              {label}
-            </button>
-          ))}
-        </div>
+
       </nav>
 
       {/* Footer Profile & Logout */}

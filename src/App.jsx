@@ -16,7 +16,7 @@ import SettingsPage from './components/SettingsPage';
 import './index.css';
 
 const DEFAULT_DEMO_AUTH = {
-  token: 'demo-admin-jwt-token-curaterra',
+  token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsInJvbGUiOiJhZG1pbiJ9.NaGwKb8dJukRfPsZ6GtODVAqpQqZkvjYOSOi-jLkMZc',
   user: {
     email: 'admin@curaterra.gov.in',
     role: 'admin',
@@ -38,8 +38,13 @@ const PAGE_TITLES = {
 };
 
 export default function App() {
-  const [auth, setAuth] = useState(() => getStoredAuth() || DEFAULT_DEMO_AUTH);
-  const [activeTab, setActiveTab] = useState('overview');
+  const [auth, setAuth] = useState(() => getStoredAuth());
+  
+  const [activeTab, setActiveTab] = useState(() => {
+    const hash = window.location.hash.replace('#', '');
+    return hash || 'overview';
+  });
+  
   const [preselectedScheme, setPreselectedScheme] = useState(null);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -50,8 +55,23 @@ export default function App() {
     if (current?.user?.role === 'admin') {
       setAuth(current);
     } else {
-      setAuth(DEFAULT_DEMO_AUTH);
+      setAuth(null);
     }
+  }, []);
+
+  // Sync hash changes (browser back/forward buttons)
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace('#', '');
+      if (hash) {
+        if (hash !== 'upload') setPreselectedScheme(null);
+        setActiveTab(hash);
+      } else {
+        setActiveTab('overview');
+      }
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
   const handleLoginSuccess = (data) => {
@@ -59,19 +79,19 @@ export default function App() {
       token: data.token,
       user: { email: data.email || 'admin@curaterra.gov.in', role: data.role || 'admin' },
     });
-    setActiveTab('overview');
+    window.location.hash = 'overview';
   };
 
   const handleLogout = () => {
     clearStoredAuth();
     setAuth(null);
-    setActiveTab('overview');
     setPreselectedScheme(null);
+    window.location.hash = '';
   };
 
   const handleEditScheme = (scheme) => {
     setPreselectedScheme(scheme);
-    setActiveTab('upload');
+    window.location.hash = 'upload';
   };
 
   const handleSchemeUpdated = () => {
@@ -80,7 +100,7 @@ export default function App() {
 
   const navigateTo = (tab) => {
     if (tab !== 'upload') setPreselectedScheme(null);
-    setActiveTab(tab);
+    window.location.hash = tab;
     setMobileSidebarOpen(false);
   };
 

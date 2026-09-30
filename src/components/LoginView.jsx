@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ShieldCheck, Lock, Mail, Eye, EyeOff, AlertCircle, ArrowRight, Sparkles, CheckCircle2 } from 'lucide-react';
 import { api } from '../api';
+import logoImg from '../assets/logo.jpeg';
 
 export default function LoginView({ onLoginSuccess }) {
   const [email, setEmail] = useState('');
@@ -10,13 +11,7 @@ export default function LoginView({ onLoginSuccess }) {
   const [error, setError] = useState(null);
 
   const handleBypass = () => {
-    const demoData = {
-      token: 'demo-admin-jwt-token-curaterra',
-      email: 'admin@curaterra.gov.in',
-      role: 'admin',
-      isDemoMode: true
-    };
-    onLoginSuccess(demoData);
+    // Bypass removed to enforce proper authentication workflow
   };
 
   const handleSubmit = async (e) => {
@@ -31,8 +26,7 @@ export default function LoginView({ onLoginSuccess }) {
       const res = await api.login(emailToUse, pwdToUse);
       onLoginSuccess(res);
     } catch (err) {
-      // Seamlessly bypass if any issue arises
-      handleBypass();
+      setError(err.message || 'Authentication failed. Please check your credentials.');
     } finally {
       setLoading(false);
     }
@@ -50,13 +44,13 @@ export default function LoginView({ onLoginSuccess }) {
         {/* Glowing Logo Badge */}
         <div className="login-badge-wrap">
           <div className="badge-glow"></div>
-          <div className="badge-box">
-            <ShieldCheck size={36} className="badge-svg" />
+          <div className="badge-box" style={{ padding: 0, overflow: 'hidden', background: 'transparent' }}>
+            <img src={logoImg} alt="CuraTerra Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           </div>
         </div>
 
         <h1 className="gradient-text login-brand-title">CuraTerra AI</h1>
-        <p className="login-brand-subtitle">Government Scheme & Circular Ingestion Portal</p>
+        <p className="login-brand-subtitle">Admin Portal</p>
 
         {/* Quick Demo Credentials Card */}
         <div className="demo-credentials-card" onClick={handleFillDemo}>
@@ -125,31 +119,7 @@ export default function LoginView({ onLoginSuccess }) {
             )}
           </button>
 
-          <button
-            type="button"
-            onClick={handleBypass}
-            style={{
-              width: '100%',
-              marginTop: '12px',
-              padding: '12px',
-              borderRadius: '12px',
-              border: '1px solid rgba(16, 185, 129, 0.35)',
-              background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(6, 95, 70, 0.25))',
-              color: '#34d399',
-              fontWeight: '600',
-              fontSize: '0.88rem',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '8px',
-              transition: 'all 0.2s ease',
-            }}
-            title="Skip authentication to test UI features directly"
-          >
-            <Sparkles size={16} />
-            <span>⚡ Bypass Login (Server Offline Mode)</span>
-          </button>
+
         </form>
 
         <p className="login-security-notice">

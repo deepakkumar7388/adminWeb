@@ -182,16 +182,8 @@ export const api = {
       setStoredAuth(data.token, { email: data.email, role: data.role });
       return data;
     } catch (err) {
-      // Seamlessly authenticate Demo Admin when backend is offline or unreachable
-      console.info('Backend server offline or unreachable. Authenticating as Demo Administrator.');
-      const demoData = {
-        token: 'demo-admin-jwt-token-curaterra',
-        email: email || 'admin@curaterra.gov.in',
-        role: 'admin',
-        isDemoMode: true
-      };
-      setStoredAuth(demoData.token, { email: demoData.email, role: demoData.role });
-      return demoData;
+      console.error('Login failed:', err);
+      throw err;
     }
   },
 
@@ -203,15 +195,8 @@ export const api = {
       if (!res.ok) throw new Error('Failed to fetch admin stats');
       return await res.json();
     } catch (e) {
-      const schemes = getStoredSchemes();
-      const uniqueCats = new Set(schemes.map(s => s.category)).size;
-      return {
-        total_schemes: schemes.length,
-        total_users: 148,
-        categories_count: uniqueCats || 6,
-        system_status: 'Operational (Active Sandbox)',
-        rag_status: 'Vectorstore Synchronized'
-      };
+      console.error('Failed to get stats:', e);
+      throw e;
     }
   },
 
@@ -223,7 +208,8 @@ export const api = {
       if (!res.ok) throw new Error('Failed to fetch schemes');
       return await res.json();
     } catch (e) {
-      return getStoredSchemes();
+      console.error('Failed to get schemes:', e);
+      throw e;
     }
   },
 
@@ -238,46 +224,13 @@ export const api = {
         method: 'POST',
         headers: { ...authHeaders() },
         body: formData,
-      }, 4000);
+      }, 90000); // 90s — AI extraction needs time
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Failed to extract PDF');
       return data;
     } catch (err) {
-      // Simulated intelligent extraction when backend is not running
-      await new Promise(r => setTimeout(r, 1200));
-      const cleanName = (file.name || 'Scheme_Circular.pdf').replace(/\.[^/.]+$/, '').replace(/[_-]/g, ' ');
-      
-      let baseData = null;
-      if (mode === 'edit' && schemeId) {
-        const schemes = getStoredSchemes();
-        baseData = schemes.find(s => s.id === schemeId);
-      }
-
-      return {
-        success: true,
-        extracted: {
-          id: baseData ? baseData.id : `SCHEME-REV-${Date.now().toString().slice(-4)}`,
-          titleEn: baseData ? `${baseData.titleEn} (Revised Amendment)` : cleanName.toUpperCase(),
-          titleHi: baseData ? `${baseData.titleHi} (संशोधित)` : `${cleanName} (अधिसूचना)`,
-          ministryEn: baseData?.ministryEn || 'Ministry of Agriculture and Farmers Welfare, Govt. of India',
-          ministryHi: baseData?.ministryHi || 'कृषि एवं किसान कल्याण मंत्रालय, भारत सरकार',
-          category: baseData?.category || 'farming',
-          benefitEn: baseData ? `${baseData.benefitEn} [Revised under Gazette Notification 2026]` : 'Direct financial subsidy and technical assistance provided directly through Aadhaar-enabled bank accounts.',
-          benefitHi: baseData?.benefitHi || 'आधार-सक्षम प्रत्यक्ष लाभ अंतरण (DBT) के माध्यम से वित्तीय अनुदान।',
-          benefitAmount: baseData?.benefitAmount || '₹10,000 / Installment',
-          descriptionEn: `Official administrative policy guideline circular ingested from ${file.name}. Detailed criteria, financial allocations, and nodal officer workflows verified.`,
-          descriptionHi: `आधिकारिक राजपत्र परिपत्र ${file.name} से स्वचालित रूप से विश्लेषित प्रशासनिक योजना विवरण।`,
-          criteriaEn: 'Residents of India fulfilling economic criteria with valid biometric Aadhaar authentication.',
-          criteriaHi: 'वैध बायोमेट्रिक आधार सत्यापन युक्त भारतीय नागरिक।',
-          requiredDocsEn: baseData?.requiredDocsEn || [
-            'Aadhaar Card with linked mobile number',
-            'Bank Account Passbook / Statement',
-            'Income & Category Verification Certificate',
-            'Domicile / Residence Certificate'
-          ]
-        },
-        message: 'AI Extraction complete! Extracted bilingual parameters from circular.'
-      };
+      console.error('Extraction failed:', err);
+      throw err;
     }
   },
 
@@ -298,24 +251,8 @@ export const api = {
       if (!res.ok) throw new Error(data.message || 'Failed to save scheme');
       return data;
     } catch (err) {
-      // Persist in localStorage
-      const schemes = getStoredSchemes();
-      const schemeId = schemeData.id || `SCHEME-${Date.now().toString().slice(-4)}`;
-      const normalizedScheme = { ...schemeData, id: schemeId };
-
-      const existingIndex = schemes.findIndex(s => s.id === schemeId);
-      if (existingIndex >= 0) {
-        schemes[existingIndex] = normalizedScheme;
-      } else {
-        schemes.unshift(normalizedScheme);
-      }
-      saveStoredSchemes(schemes);
-
-      return {
-        success: true,
-        message: `Scheme "${normalizedScheme.titleEn}" saved successfully! RAG Vectorstore updated.`,
-        scheme: normalizedScheme
-      };
+      console.error('Save scheme failed:', err);
+      throw err;
     }
   },
 
@@ -329,10 +266,8 @@ export const api = {
       if (!res.ok) throw new Error(data.message || 'Failed to delete scheme');
       return data;
     } catch (err) {
-      const schemes = getStoredSchemes();
-      const updated = schemes.filter(s => s.id !== schemeId);
-      saveStoredSchemes(updated);
-      return { success: true, message: 'Scheme deleted successfully from repository.' };
+      console.error('Delete scheme failed:', err);
+      throw err;
     }
   },
 };

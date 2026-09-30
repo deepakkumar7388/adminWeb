@@ -173,8 +173,18 @@ export default function SchemesDirectory({ onEditScheme }) {
                     <td><span className="badge badge-success" style={{ fontSize: '0.7rem' }}>Active</span></td>
                     <td>
                       <div style={{ display: 'flex', gap: 3 }}>
-                        <button className="tbl-action-btn" title="View"><Eye size={13} /></button>
-                        <button className="tbl-action-btn" title="Edit" onClick={() => onEditScheme && onEditScheme(s)}><Edit3 size={13} /></button>
+                        <button type="button" className="tbl-action-btn" title="View Official Page" onClick={() => {
+                          if (s.officialUrl && s.officialUrl !== 'https://myscheme.gov.in') {
+                            window.open(s.officialUrl, '_blank');
+                          } else {
+                            window.open('https://myscheme.gov.in', '_blank');
+                          }
+                        }}>
+                          <Eye size={13} />
+                        </button>
+                        <button type="button" className="tbl-action-btn" title="Edit" onClick={() => onEditScheme && onEditScheme(s)}>
+                          <Edit3 size={13} />
+                        </button>
                         {deleteId === s.id ? (
                           <>
                             <button className="btn btn-danger btn-sm" style={{ padding: '3px 8px', fontSize: '0.72rem' }} onClick={() => handleDelete(s.id)}>Confirm</button>
