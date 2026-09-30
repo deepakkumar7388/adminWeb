@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://deepakkumar7388.github.io/adminWeb/sitemap.xml
