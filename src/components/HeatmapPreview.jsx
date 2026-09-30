@@ -27,10 +27,11 @@ const DOMAINS_LIST = [
 ];
 
 const METRICS_LIST = [
-  'Citizen Uptake (%)',
-  'Fund Allocation (₹ Cr)',
-  'Scheme Penetration',
-  'District Coverage'
+  'Total Citizens',
+  'Total Eligible Citizens',
+  'Total Applications',
+  'Active Schemes',
+
 ];
 
 export default function HeatmapPreview() {
